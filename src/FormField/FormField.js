@@ -8,16 +8,13 @@ const PROPERTY_TYPES = {
     error: PropTypes.string,
     touched: PropTypes.bool,
     valid: PropTypes.bool,
-    label: PropTypes.string,
-    testId: PropTypes.string
+    label: PropTypes.node,
+    testId: PropTypes.string,
+    colClass: PropTypes.string
 };
 const DEFAULT_PROPS = {};
 
 class FormField extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     getMessage() {
         let style = classNames({
             'form-field__error-msg': this.props.error

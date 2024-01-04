@@ -2,7 +2,7 @@ import Button from './Button/Button';
 import ButtonGroup from './Button/ButtonGroup';
 import Radio from './Radio/Radio';
 import RadioGroup from './Radio/RadioGroup/RadioGroup';
-import Nav from './NavBar';
+import NavBar from './NavBar';
 import NavItem from './NavBar/NavItem';
 import NavDropDownItem from './NavBar/NavDropDownItem';
 import NavHrefItem from './NavBar/NavHrefItem';
@@ -20,7 +20,7 @@ import EventPlanner from './Eventplanner';
 import FormField from './FormField/FormField';
 import Label from './Label/Label';
 import TextArea from './TextArea/TextArea';
-import FeedbackManager from './Feedback/FeedbackManager/FeedbackManager';
+import FeedbackManager from './Feedback/FeedbackManager';
 import Pager from './Pager/Pager';
 import MonthPager from './MonthPager/MonthPager';
 import Link from './Link/Link';
@@ -33,6 +33,8 @@ import Switch from './Switch/Switch';
 import GroupedMultiSelect from './Select/SelectGrouped/GroupedMultiSelect';
 import MultiSelectPopup from './MultiSelect/MultiSelectPopup';
 
+import TreeSelect from './TreeSelect';
+
 import * as dateUtils from './util/date-utils';
 import * as dateFormats from './util/date-formats';
 
@@ -41,7 +43,7 @@ export {
     ButtonGroup,
     Radio,
     RadioGroup,
-    Nav,
+    NavBar,
     NavItem,
     NavHrefItem,
     NavDropDownItem,
@@ -53,6 +55,7 @@ export {
     Avatar,
     Select,
     MultiSelect,
+    TreeSelect,
     EventPlanner,
     FormField,
     Label,

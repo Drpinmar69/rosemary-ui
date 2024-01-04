@@ -4,7 +4,7 @@ import find from 'lodash/find';
 import trim from 'lodash/trim';
 import Fuse from 'fuse.js';
 import Link from '../Link/Link';
-import { isDefined, findIdentifiables, compare } from '../util/utils';
+import { compare, findIdentifiables, isDefined } from '../util/utils';
 import IconInput from '../InputIcon/IconInput';
 import CheckBoxList from '../Select/CheckBoxList';
 import keyNav from '../Select/KeyBoardNav';
@@ -20,11 +20,19 @@ const PROPERTY_TYPES = {
     ),
     onChange: PropTypes.func,
     value: PropTypes.arrayOf(PropTypes.number.isRequired),
-    compare: PropTypes.func
+    compare: PropTypes.func,
+    showSearch: PropTypes.bool,
+    showClear: PropTypes.bool,
+    selectedOnTop: PropTypes.bool,
+    popupHeader: PropTypes.element
 };
 const DEFAULT_PROPS = {
     placeHolder: 'Search ...',
-    compare: compare
+    compare: compare,
+    showSearch: true,
+    showClear: true,
+    popupHeader: null,
+    selectedOnTop: true
 };
 
 class MultiSelectPopup extends React.Component {
@@ -49,7 +57,9 @@ class MultiSelectPopup extends React.Component {
 
     getAllSorted() {
         let result = this.props.options.slice(0);
-        result.sort(this._sortSelectedOnTop);
+        if (this.props.selectedOnTop) {
+            result.sort(this._sortSelectedOnTop);
+        }
         return result;
     }
 
@@ -58,6 +68,9 @@ class MultiSelectPopup extends React.Component {
 
         let isValueChanged = nextProps.value !== this.props.value;
         if (isValueChanged) {
+            if (this.props.options !== nextProps.options) {
+                this.resetSearch(nextProps.options);
+            }
             this.setState({ selected: findIdentifiables(nextProps.options, nextProps.value) });
         }
     }
@@ -134,13 +147,27 @@ class MultiSelectPopup extends React.Component {
     }
 
     _applySearch = value => {
+        if (this.state.query === value) {
+            return;
+        }
         this.resetNav();
         let filtered = trim(value).length === 0 ? this.props.options : this.fuse.search(value);
 
-        filtered.sort(this._sortSelectedOnTop);
+        if (this.props.selectedOnTop) {
+            filtered.sort(this._sortSelectedOnTop);
+        }
 
         this.setState({
-            filtered: filtered
+            filtered: filtered,
+            query: value
+        });
+    };
+
+    resetSearch = (options = this.props.options) => {
+        this.resetNav();
+        this.setState({
+            filtered: this.props.selectedOnTop ? options.sort(this._sortSelectedOnTop) : options,
+            query: ''
         });
     };
 
@@ -157,31 +184,43 @@ class MultiSelectPopup extends React.Component {
     }
 
     render() {
+        return this.props.renderOptions ? this.props.renderOptions() : this.renderOptions();
+    }
+
+    renderOptions = () => {
         return (
             <div className="select__popup">
-                <div className="select__search-container">
-                    <IconInput
-                        inputRef={input => (this._searchInput = input)}
-                        onKeyDown={e => this.navigate(e)}
-                        ref="searchInput"
-                        fluid={true}
-                        placeholder={this.props.placeholder}
-                        size="sm"
-                        onChange={this._applySearch}
-                        className="select__search"
-                        iconClassName="im icon-search"
-                    />
-                </div>
-                <div className="select__clear-btn">
-                    <Link
-                        className="select__clear-btn"
-                        onClick={() => {
-                            this._selectOptions([]);
-                        }}
-                    >
-                        Clear all selected
-                    </Link>
-                </div>
+                {this.props.popupHeader ? this.props.popupHeader : null}
+                {this.props.showSearch ? (
+                    <div className="select__search-container">
+                        <IconInput
+                            inputRef={input => (this._searchInput = input)}
+                            onKeyDown={e => this.navigate(e)}
+                            ref="searchInput"
+                            fluid={true}
+                            placeholder={this.props.placeholder}
+                            size="sm"
+                            onChange={this._applySearch}
+                            className="select__search"
+                            iconClassName="im icon-search"
+                        />
+                    </div>
+                ) : null}
+                {this.props.showClear ? (
+                    <div>
+                        <div className="select__clear-btn">
+                            <Link
+                                className="select__clear-btn"
+                                onClick={() => {
+                                    this._selectOptions([]);
+                                }}
+                            >
+                                Clear all selected
+                            </Link>
+                        </div>
+                    </div>
+                ) : null}
+
                 <div className="select__options">
                     <CheckBoxList
                         ref={checkBoxList => (this._checkBoxList = checkBoxList)}
@@ -195,7 +234,7 @@ class MultiSelectPopup extends React.Component {
                 </div>
             </div>
         );
-    }
+    };
 }
 
 MultiSelectPopup.propTypes = PROPERTY_TYPES;

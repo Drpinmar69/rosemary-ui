@@ -4,12 +4,13 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
 import Popup from '../Popup';
-import { isDefined, findIdentifiables, compare } from '../util/utils';
+import { compare, findIdentifiables, isDefined } from '../util/utils';
 import MultiSelectPopup from './MultiSelectPopup';
 
 import { withIdAndTypeContext } from '../util/hoc/WithIdAndTypeHOC';
 
-const PROPERTY_TYPES = {
+export const PROPERTY_TYPES = {
+    disabled: PropTypes.bool,
     placeholder: PropTypes.string,
     searchPlaceholder: PropTypes.string,
     options: PropTypes.arrayOf(
@@ -20,12 +21,21 @@ const PROPERTY_TYPES = {
     ),
     className: PropTypes.string,
     onChange: PropTypes.func,
-    getText: PropTypes.func
+    handleTooltipStateChange: PropTypes.func,
+    getText: PropTypes.func,
+
+    showSearch: PropTypes.bool,
+    showClear: PropTypes.bool,
+    popupHeader: PropTypes.node,
+
+    selectedOnTop: PropTypes.bool
 };
 const DEFAULT_PROPS = {
     placeholder: 'Select...',
     searchPlaceholder: 'Search ...',
-    getText: selectedOptions => `${selectedOptions.length} item(s) selected`
+    getText: selectedOptions => `${selectedOptions.length} item(s) selected`,
+    selectedOnTop: true,
+    disabled: false
 };
 
 class MultiSelect extends React.Component {
@@ -46,12 +56,6 @@ class MultiSelect extends React.Component {
     }
 
     select(selected) {
-        if (!this.isControlled()) {
-            this.setState({
-                selected: this.sort(selected)
-            });
-        }
-
         if (this.props.onChange) {
             this.props.onChange(
                 selected.map(option => {
@@ -60,6 +64,9 @@ class MultiSelect extends React.Component {
                 selected
             );
         }
+        this.setState({
+            selected: this.sort(selected)
+        });
     }
 
     sort(selected) {
@@ -67,6 +74,14 @@ class MultiSelect extends React.Component {
     }
 
     handlePopupStateChange(open) {
+        if (this.props.disabled) {
+            return;
+        }
+
+        if (this.props.handlePopupStateChange) {
+            this.props.handlePopupStateChange(open);
+        }
+
         let newState = {
             popupOpen: open,
             tooltipOpen: false
@@ -79,6 +94,10 @@ class MultiSelect extends React.Component {
     }
 
     handleTooltipStateChange(open) {
+        if (this.props.handleTooltipStateChange) {
+            this.props.handleTooltipStateChange(open);
+        }
+
         if (!this.state.popupOpen && this.state.selected.length > 0) {
             this.setState({ tooltipOpen: open });
         }
@@ -104,7 +123,8 @@ class MultiSelect extends React.Component {
 
     render() {
         let className = classNames(this.props.className, 'select', {
-            placeholder: this.state.selected.length === 0
+            placeholder: this.state.selected.length === 0,
+            disabled: this.props.disabled
         });
 
         return (
@@ -136,6 +156,10 @@ class MultiSelect extends React.Component {
                 </Popup>
 
                 <MultiSelectPopup
+                    selectedOnTop={this.props.selectedOnTop}
+                    showSearch={this.props.showSearch}
+                    showClear={this.props.showClear}
+                    popupHeader={this.props.popupHeader}
                     placeholder={this.props.searchPlaceholder}
                     options={this.props.options}
                     value={this.state.selected.map(selected => {
@@ -143,6 +167,7 @@ class MultiSelect extends React.Component {
                     })}
                     onChange={(selectedIds, selected) => this.select(selected)}
                     compare={compare}
+                    renderOptions={this.props.renderOptions}
                 />
             </Popup>
         );
@@ -152,4 +177,4 @@ class MultiSelect extends React.Component {
 MultiSelect.propTypes = PROPERTY_TYPES;
 MultiSelect.defaultProps = DEFAULT_PROPS;
 
-export default withIdAndTypeContext(MultiSelect);
+export default withIdAndTypeContext(MultiSelect, 'MultiSelect');

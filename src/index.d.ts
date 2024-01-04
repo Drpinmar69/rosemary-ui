@@ -1,4 +1,10 @@
+import * as React from 'react';
+
 declare module 'rosemary-ui' {
+    export interface Option {
+        id: number;
+        displayString: string;
+    }
     export import NavBar = __RosemaryUI.NavBar;
     export import DatePicker = __RosemaryUI.DatePicker;
     export import DatePickerCalendar = __RosemaryUI.DatePickerCalendar;
@@ -7,12 +13,15 @@ declare module 'rosemary-ui' {
     export import NavItem = __RosemaryUI.NavItem;
     export import DatePickerPopup = __RosemaryUI.DatePickerPopup;
     export import DateRangePicker = __RosemaryUI.DateRangePicker;
-    export import Eventplanner = __RosemaryUI.Eventplanner;
+    export import EventPlanner = __RosemaryUI.EventPlanner;
     export import Alert = __RosemaryUI.Alert;
     export import Avatar = __RosemaryUI.Avatar;
+
     export import Button = __RosemaryUI.Button;
+    export import ButtonProps = __RosemaryUI.ButtonProps;
+
     export import Confirmation = __RosemaryUI.Confirmation;
-    export import Checkbox = __RosemaryUI.Checkbox;
+    export import CheckBox = __RosemaryUI.CheckBox;
     export import Feedback = __RosemaryUI.NavBar;
     export import FeedbackCard = __RosemaryUI.FeedbackCard;
     export import FeedbackManager = __RosemaryUI.FeedbackManager;
@@ -25,8 +34,10 @@ declare module 'rosemary-ui' {
     export import MonthPickerCalendar = __RosemaryUI.MonthPickerCalendar;
     export import MonthPickerPopup = __RosemaryUI.MonthPickerPopup;
     export import MultiSelect = __RosemaryUI.MultiSelect;
+    export import TreeSelect = __RosemaryUI.TreeSelect;
     export import Pager = __RosemaryUI.Pager;
     export import Popup = __RosemaryUI.Popup;
+    export import Modal = __RosemaryUI.Modal;
     export import Radio = __RosemaryUI.Radio;
     export import RadioGroup = __RosemaryUI.RadioGroup;
     export import Select = __RosemaryUI.Select;
@@ -36,6 +47,9 @@ declare module 'rosemary-ui' {
     export import Tabs = __RosemaryUI.Tabs;
     export import Tab = __RosemaryUI.Tab;
     export import TextArea = __RosemaryUI.TextArea;
+    export import Input = __RosemaryUI.TextArea;
+    export import GroupedMultiSelect = __RosemaryUI.GroupedMultiSelect;
+    export import MultiSelectPopup = __RosemaryUI.MultiSelectPopup;
 }
 
 declare namespace __RosemaryUI {
@@ -55,17 +69,31 @@ declare namespace __RosemaryUI {
 
     class DateRangePicker extends React.Component<any> {}
 
-    class Eventplanner extends React.Component<any> {}
+    class EventPlanner extends React.Component<any> {}
 
-    class Alert extends React.Component<any> {}
+    class Alert extends React.Component<any> {
+        static Type: any;
+    }
 
     class Avatar extends React.Component<any> {}
 
-    class Button extends React.Component<any> {}
+    type ButtonProps = {
+        onClick?: ((e?: React.MouseEvent<any>) => void) | any;
+        selected?: boolean;
+        disabled?: boolean;
+        className?: string;
+        title?: string;
+        value?: string;
+        testId?: string;
+        as?: string;
+        href?: string;
+        baseClassName?: string;
+    } & React.HTMLAttributes<{}>;
 
+    class Button extends React.Component<ButtonProps> {}
     class Confirmation extends React.Component<any> {}
 
-    class Checkbox extends React.Component<any> {}
+    class CheckBox extends React.Component<any> {}
 
     class Feedback extends React.Component<any> {}
 
@@ -91,29 +119,115 @@ declare namespace __RosemaryUI {
 
     class MonthPickerPopup extends React.Component<any> {}
 
-    class MultiSelect extends React.Component<any> {}
+    type MultiSelectProps = {
+        disabled?: boolean;
+        placeholder?: string;
+        searchPlaceholder?: string;
+
+        options: {
+            id: number;
+            displayString: string;
+        }[];
+
+        className?: string;
+        onChange: (value: number) => any;
+        value: number[];
+        handleTooltipStateChange?: (...any) => any;
+        getText?: (...any) => React.ReactNode;
+
+        showSearch?: boolean;
+        showClear?: boolean;
+        popupHeader?: React.ReactNode;
+
+        selectedOnTop?: boolean;
+    };
+
+    class MultiSelect extends React.Component<MultiSelectProps> {}
+
+    class TreeSelect extends React.Component<any> {}
+    class TreeSelectWithInactiveSwitch extends React.Component<any> {}
+    class SingleTreeSelect extends React.Component<any> {}
 
     class Pager extends React.Component<any> {}
 
     class Popup extends React.Component<any> {}
 
+    type ModalProps = {
+        open?: boolean;
+        on?: string;
+        trigger?: React.ReactNode;
+        closeOnClickOutside?: boolean;
+        popupClassName?: string;
+        onClose?: () => void;
+    };
+    class Modal extends React.Component<ModalProps> {}
+
     class Radio extends React.Component<any> {}
 
     class RadioGroup extends React.Component<any> {}
 
-    class Select extends React.Component<any> {}
+    class Select extends React.Component<{
+        id?: number | string;
+    }> {}
+
+    class SelectLabelInput extends React.Component<any> {}
+    class SingleSelectInput extends React.Component<any> {}
+    class MultiSelectInput extends React.Component<any> {}
 
     class SelectGrouped extends React.Component<any> {}
 
     class Switch extends React.Component<any> {}
 
-    class Table extends React.Component<any> {}
+    type TableHeaderCell = {
+        el: React.ReactNode;
+        key: string | number;
+    };
+
+    type TableProps = {
+        data: any;
+        cells: (item) => Array<React.ReactNode>;
+        rowIndex: (item: any) => string | number;
+        className?: string;
+        sorted?: {
+            key: any;
+            direction: any;
+        };
+        colgroup?: any[];
+        colSpanBottom?: number;
+        defSorting?: number;
+        rowStyle?: (item: any) => string;
+        rowProps?: (item: any) => any;
+        bottomSection?: React.ReactNode;
+        headerCells?: () => Array<any>;
+        onHeaderClick?: (key: any, index: number, el: TableHeaderCell, direction: string) => void;
+        rowDetails?: {};
+        row?: {};
+        testId?: any;
+    };
+
+    class Table extends React.Component<TableProps> {}
 
     class Tabs extends React.Component<any> {}
 
     class Tab extends React.Component<any> {}
 
     class TextArea extends React.Component<any> {}
+
+    class GroupedMultiSelect extends React.Component<{
+        onChange: (value: any) => any;
+        showSubSection: boolean;
+        placeholder: string;
+        value: any;
+        options: any[];
+        keys: string[];
+        extra: () => any;
+        subSection: any;
+        onGoBack: () => any;
+        onPopupStateChange: () => any;
+        popupHeader: React.ReactNode;
+    }> {}
+
+    class MultiSelectPopup extends React.Component<any> {}
 }
 
 declare module 'rosemary-ui/NavBar' {
@@ -133,9 +247,9 @@ declare module 'rosemary-ui/NavBar/NavItem' {
     export default NavItem;
 }
 
-declare module 'rosemary-ui/Eventplanner' {
-    export import Eventplanner = __RosemaryUI.Eventplanner;
-    export default Eventplanner;
+declare module 'rosemary-ui/EventPlanner' {
+    export import EventPlanner = __RosemaryUI.EventPlanner;
+    export default EventPlanner;
 }
 
 declare module 'rosemary-ui/Alert' {
@@ -149,10 +263,13 @@ declare module 'rosemary-ui/Avatar' {
 declare module 'rosemary-ui/Button' {
     export import Button = __RosemaryUI.Button;
     export default Button;
+
+    import ButtonProps = __RosemaryUI.ButtonProps;
+    export { ButtonProps };
 }
-declare module 'rosemary-ui/Checkbox' {
-    export import Checkbox = __RosemaryUI.Checkbox;
-    export default Checkbox;
+declare module 'rosemary-ui/CheckBox' {
+    export import CheckBox = __RosemaryUI.CheckBox;
+    export default CheckBox;
 }
 declare module 'rosemary-ui/Confirmation' {
     export import Confirmation = __RosemaryUI.Confirmation;
@@ -181,6 +298,12 @@ declare module 'rosemary-ui/Feedback' {
 declare module 'rosemary-ui/Feedback/FeedbackCard' {
     export import FeedbackCard = __RosemaryUI.FeedbackCard;
     export default FeedbackCard;
+}
+declare module 'rosemary-ui/Feedback/types' {
+    type FeedbackTypes = { error: 'error'; warning: 'warning'; info: 'info'; success: 'success' };
+    const types: FeedbackTypes;
+
+    export default types;
 }
 
 declare module 'rosemary-ui/Feedback/FeedbackManager' {
@@ -230,7 +353,13 @@ declare module 'rosemary-ui/MultiSelect' {
     export import MultiSelect = __RosemaryUI.MultiSelect;
     export default MultiSelect;
 }
-
+declare module 'rosemary-ui/TreeSelect' {
+    export import TreeSelect = __RosemaryUI.TreeSelect;
+    export default TreeSelect;
+    import TreeWithInactiveSwitch = __RosemaryUI.TreeSelectWithInactiveSwitch;
+    import SingleTreeSelect = __RosemaryUI.SingleTreeSelect;
+    export { TreeWithInactiveSwitch, SingleTreeSelect };
+}
 declare module 'rosemary-ui/Pager' {
     export import Pager = __RosemaryUI.Pager;
     export default Pager;
@@ -238,6 +367,12 @@ declare module 'rosemary-ui/Pager' {
 declare module 'rosemary-ui/Popup' {
     export import Popup = __RosemaryUI.Popup;
     export default Popup;
+}
+declare module 'rosemary-ui/Modal' {
+    export import Modal = __RosemaryUI.Modal;
+    export default Modal;
+    import ModalProps = __RosemaryUI.ModalProps;
+    export { ModalProps };
 }
 declare module 'rosemary-ui/Radio' {
     export import Radio = __RosemaryUI.Radio;
@@ -250,6 +385,11 @@ declare module 'rosemary-ui/Radio/RadioGroup' {
 declare module 'rosemary-ui/Select' {
     export import Select = __RosemaryUI.Select;
     export default Select;
+
+    import SingleSelectInput = __RosemaryUI.SingleSelectInput;
+    import MultiSelectInput = __RosemaryUI.MultiSelectInput;
+    import SelectLabelInput = __RosemaryUI.SelectLabelInput;
+    export { SingleSelectInput, MultiSelectInput, SelectLabelInput };
 }
 declare module 'rosemary-ui/Select/SelectGrouped' {
     export import SelectGrouped = __RosemaryUI.SelectGrouped;
@@ -274,4 +414,13 @@ declare module 'rosemary-ui/Tabs/Tab' {
 declare module 'rosemary-ui/TextArea' {
     export import TextArea = __RosemaryUI.TextArea;
     export default TextArea;
+}
+declare module 'rosemary-ui/GroupedMultiSelect' {
+    export import GroupedMultiSelect = __RosemaryUI.GroupedMultiSelect;
+    export default GroupedMultiSelect;
+}
+
+declare module 'rosemary-ui/MultiSelectPopup' {
+    export import MultiSelectPopup = __RosemaryUI.MultiSelectPopup;
+    export default MultiSelectPopup;
 }

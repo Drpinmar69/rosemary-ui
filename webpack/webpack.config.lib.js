@@ -8,7 +8,6 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = webpackUtils.merge(base.defaults, {
     entry: {
         bundle: [
-            'element-closest',
             './src/index'
         ]
     },
@@ -33,14 +32,6 @@ module.exports = webpackUtils.merge(base.defaults, {
                 commonjs2: 'react-dom',
                 commonjs: 'react-dom',
                 amd: 'react-dom'
-            }
-        },
-        {
-            'react-addons-css-transition-group': {
-                root: ['React', 'addons', 'CSSTransitionGroup'],
-                commonjs: 'react-addons-css-transition-group',
-                commonjs2: 'react-addons-css-transition-group',
-                amd: 'react-addons-css-transition-group'
             }
         }
     ],

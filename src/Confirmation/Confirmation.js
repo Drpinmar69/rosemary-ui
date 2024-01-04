@@ -4,12 +4,13 @@ import classNames from 'classnames';
 import Button from '../Button/Button';
 
 const PROPERTY_TYPES = {
-    body: PropTypes.string,
-    title: PropTypes.string,
+    body: PropTypes.node,
+    title: PropTypes.node,
     onConfirm: PropTypes.func,
     onCancel: PropTypes.func,
     confirmBtnTxt: PropTypes.string,
-    cancelBtnText: PropTypes.string
+    cancelBtnText: PropTypes.string,
+    testId: PropTypes.any
 };
 const DEFAULT_PROPS = {
     cancelBtnText: 'Cancel',
@@ -19,23 +20,27 @@ const DEFAULT_PROPS = {
 };
 
 class Confirmation extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         let style = classNames(this.props.className, 'ros-confirm');
 
         return (
-            <div className={style}>
+            <div data-test-id={this.props.testId} className={style}>
                 <h2 className="ros-confirm__title">{this.props.title}</h2>
                 <div className="ros-confirm__body">{this.props.body}</div>
                 <div className="form-separator" />
                 <div className="form-btn-group">
-                    <Button className="btn btn--primary" onClick={() => this.props.onConfirm()}>
+                    <Button
+                        className="btn btn--primary"
+                        testId={this.props.testId + '_confirm'}
+                        onClick={this.props.onConfirm}
+                    >
                         {this.props.confirmBtnText}
                     </Button>
-                    <Button className="btn-link btn--m" onClick={() => this.props.onCancel()}>
+                    <Button
+                        className="btn-link btn--m"
+                        testId={this.props.testId + '_cancel'}
+                        onClick={this.props.onCancel}
+                    >
                         {this.props.cancelBtnText}
                     </Button>
                 </div>

@@ -19,7 +19,8 @@ const PROPERTY_TYPES = {
     placeholder: PropTypes.string,
     inputRef: PropTypes.func,
     size: sizes.anySize,
-    value: PropTypes.string
+    value: PropTypes.string,
+    testId: PropTypes.any
 };
 
 const DEFAULT_PROPS = {

@@ -6,7 +6,8 @@ import cn from 'classnames';
 const PROP_TYPES = {
     disable: PropTypes.bool,
     checked: PropTypes.bool,
-    title: PropTypes.string
+    title: PropTypes.string,
+    testId: PropTypes.any
 };
 
 const DEFAULT_PROPS = {
@@ -54,13 +55,20 @@ class Switch extends React.Component {
     }
 
     render() {
+        const checked = this._isChecked();
+
         const classNames = cn('ros-switch', {
             disabled: this.props.disabled,
-            checked: this._isChecked()
+            checked: checked
         });
 
         return (
-            <div onClick={this._handleOnChange} className={classNames}>
+            <div
+                data-test-id={this.props.testId}
+                data-test-checked={checked}
+                onClick={this._handleOnChange}
+                className={classNames}
+            >
                 <span className="ros-switch__control">
                     <i />
                 </span>

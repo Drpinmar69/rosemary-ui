@@ -14,6 +14,7 @@ const DESC = 'DESC';
 const ASC = 'ASC';
 
 const PROPERTY_TYPES = {
+    className: PropTypes.string,
     data: PropTypes.array,
     sorted: PropTypes.shape({
         key: PropTypes.any,
@@ -22,26 +23,23 @@ const PROPERTY_TYPES = {
     colgroup: PropTypes.array,
     colSpanBottom: PropTypes.number,
     defSorting: PropTypes.number,
-    expand: PropTypes.array,
     headerCells: PropTypes.func,
     loadingIndicator: PropTypes.func,
     rowStyle: PropTypes.func,
+    rowProps: PropTypes.func,
     row: PropTypes.object,
     cells: PropTypes.func.isRequired,
     rowIndex: PropTypes.func.isRequired,
     bottomSection: PropTypes.element,
-    onHeaderClick: PropTypes.func
+    onHeaderClick: PropTypes.func,
+    testId: PropTypes.any
 };
 const DEFAULT_PROPS = {
     data: [],
-    headerCells: []
+    headerCells: () => []
 };
 
 class Table extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     _getCells(obj) {
         return this.props.cells(obj);
     }
@@ -112,9 +110,13 @@ class Table extends React.Component {
 
     _handleHeaderCellClick(key, index, cell, sortable) {
         if (this.props.onHeaderClick && sortable) {
-            this.props.onHeaderClick(key, index, cell);
+            this.props.onHeaderClick(key, index, cell, this._toggleDirection());
         }
     }
+
+    _toggleDirection = () => {
+        return this._getSortDirection() === ASC ? DESC : ASC;
+    };
 
     _renderHeader() {
         return this.props.headerCells().map((headerCell, index) => {
@@ -154,6 +156,14 @@ class Table extends React.Component {
         return {};
     }
 
+    _getRowProps(item) {
+        if (this.props.rowProps) {
+            return this.props.rowProps(item);
+        }
+
+        return {};
+    }
+
     _findRowDetails(item) {
         return find(this.props.rowDetails, obj => {
             return obj.id === this.props.rowIndex(item);
@@ -178,9 +188,15 @@ class Table extends React.Component {
             this._getRowStyle(item)
         );
 
-        return React.addons.createFragment({
-            row: (
-                <Row className={style} key={index} item={item} onClick={e => this._handleRowClick(item, index)}>
+        return (
+            <React.Fragment>
+                <Row
+                    className={style}
+                    key={index}
+                    item={item}
+                    onClick={e => this._handleRowClick(item, index)}
+                    rowProps={this._getRowProps(item)}
+                >
                     {this._getCells(item).map((cell, key) => {
                         if (cell === null) {
                             return <td className={cellStyle} key={key} />;
@@ -201,14 +217,20 @@ class Table extends React.Component {
                         );
                     })}
                 </Row>
-            ),
-            bottomSection: this._renderBottomSection(showLoader, hasData, item, rowDetails)
-        });
+                {this._renderBottomSection(showLoader, hasData, item, rowDetails)}
+            </React.Fragment>
+        );
     }
 
     _renderColGroup() {
         if (this.props.colgroup) {
-            return <colgroup>{this.props.colgroup.map((col, index) => <col key={index} width={col} />)}</colgroup>;
+            return (
+                <colgroup>
+                    {this.props.colgroup.map((col, index) => (
+                        <col key={index} width={col} />
+                    ))}
+                </colgroup>
+            );
         }
         return null;
     }
@@ -235,7 +257,7 @@ class Table extends React.Component {
         let style = classNames('ros-table', this.props.className);
 
         return (
-            <table className={style}>
+            <table data-test-id={this.props.testId} className={style}>
                 {this._renderColGroup()}
                 <thead>
                     <tr className="ros-table__header">{this._renderHeader()}</tr>

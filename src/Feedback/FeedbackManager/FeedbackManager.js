@@ -1,100 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import FeedbackCard from '../FeedbackCard/FeedbackCard';
-import { isInArray } from '../../util/utils';
-import { ERRORS, INFOS, SUCCESS_MSGS, WARNINGS } from '../card-types';
+import noop from 'lodash/noop';
+import values from 'lodash/values';
+import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
-const PROPERTY_TYPES = {
-    messages: PropTypes.shape({
-        errors: PropTypes.array,
-        infos: PropTypes.array,
-        successMsgs: PropTypes.array,
-        warnings: PropTypes.array
-    }),
-    onHide: PropTypes.func
-};
-const DEFAULT_PROPS = {
-    messages: {
-        errors: [],
-        infos: [],
-        successMsgs: [],
-        warnings: []
-    }
-};
+import Card from '../FeedbackCard';
+import types from '../types';
+
+const allowedTypes = values(types);
 
 class FeedbackManager extends React.Component {
-    constructor(props) {
-        super(props);
+    static propTypes = {
+        onCloseMessage: PropTypes.func,
+        messages: PropTypes.arrayOf(
+            PropTypes.shape({
+                text: PropTypes.string,
+                type: PropTypes.oneOf(allowedTypes)
+            })
+        ),
+        testId: PropTypes.any
+    };
 
-        this.state = {
-            messages: []
-        };
-    }
-
-    componentWillReceiveProps(props) {
-        this.setState({
-            messages: this.getMessages(props.messages)
-        });
-    }
-
-    getMessages(messages) {
-        const result = [];
-        Object.keys(messages).forEach(key => {
-            if (!isInArray(key, [ERRORS, SUCCESS_MSGS, INFOS, WARNINGS])) {
-                return;
-            }
-            return messages[key].forEach(messageObj => {
-                messageObj.text = messageObj.localizedMessage;
-                messageObj.type = key;
-
-                result.push(messageObj);
-            });
-        });
-
-        return result;
-    }
-
-    componentDidMount() {
-        const messages = this.getMessages(this.props.messages);
-        this.setState({
-            messages
-        });
-    }
-
-    hide(removedCard) {
-        if (this.props.onHide) {
-            this.props.onHide(removedCard);
-        } else {
-            const messages = this.state.messages.filter(card => {
-                return card.type !== removedCard.type || card.text !== removedCard.text;
-            });
-
-            this.setState({
-                messages
-            });
-        }
-    }
-
-    getFeedbackCard(card) {
-        return (
-            <FeedbackCard
-                onHide={removedCard => this.hide(removedCard)}
-                key={`${card.type}_${card.text}`}
-                message={card}
-            />
-        );
-    }
-
-    getCards() {
-        return this.state.messages.map(card => {
-            return this.getFeedbackCard(card);
-        });
-    }
+    static defaultProps = {
+        onCloseMessage: noop
+    };
 
     render() {
         return (
-            <div className="feedback">
+            <div data-test-id={this.props.testId} className="feedback">
                 <ReactCSSTransitionGroup
                     transitionEnter={true}
                     transitionLeave={true}
@@ -102,14 +35,26 @@ class FeedbackManager extends React.Component {
                     transitionLeaveTimeout={300}
                     transitionName={'card'}
                 >
-                    {this.getCards()}
+                    {this._renderCards()}
                 </ReactCSSTransitionGroup>
             </div>
         );
     }
-}
 
-FeedbackManager.propTypes = PROPERTY_TYPES;
-FeedbackManager.defaultProps = DEFAULT_PROPS;
+    _renderCards = () => {
+        return this.props.messages.map(message => {
+            return (
+                <Card
+                    key={message.id}
+                    id={message.id}
+                    text={message.text}
+                    title={message.title}
+                    type={message.type}
+                    onClose={this.props.onCloseMessage}
+                />
+            );
+        });
+    };
+}
 
 export default FeedbackManager;

@@ -1,17 +1,6 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import MultiSelect from './MultiSelect';
-
-function generateOptions(name, amount) {
-    let result = [];
-    for (let i = 0; i < amount; i++) {
-        result.push({
-            id: i,
-            displayString: `${name} ${i}`
-        });
-    }
-    return result;
-}
 
 function getOption(id, displayString) {
     return {
@@ -34,3 +23,7 @@ const options = [
 ];
 
 storiesOf('MultiSelect', module).add('basic', () => <MultiSelect options={options} />);
+
+storiesOf('MultiSelect', module).add('custom', () => (
+    <MultiSelect options={options} popupHeader={<h2>CUSTOM Header</h2>} showSearch={false} showClear={false} />
+));

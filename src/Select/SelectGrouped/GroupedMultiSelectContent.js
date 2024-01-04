@@ -6,7 +6,7 @@ import noop from 'lodash/noop';
 
 import SelectionList from '../SelectionList';
 import IconInput from '../../InputIcon/IconInput';
-import { contains, compare } from '../../util/utils';
+import { compare, contains } from '../../util/utils';
 
 const PROP_TYPES = {
     onChange: PropTypes.func,
@@ -15,7 +15,9 @@ const PROP_TYPES = {
         noOptionPlaceholder: PropTypes.element
     }),
     value: PropTypes.object,
-    extra: PropTypes.func
+    extra: PropTypes.func,
+    showSearch: PropTypes.bool,
+    popupHeader: PropTypes.node
 };
 
 const DEF_PROPS = {
@@ -28,6 +30,7 @@ const DEF_PROPS = {
     groupView: {},
     onChange: noop,
     compare: compare,
+    showSearch: true,
     methodCallback: noop
 };
 
@@ -50,6 +53,7 @@ class GroupedMultiSelectContent extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.options && nextProps.options !== this.props.options) {
             const filtered = this._getFilteredOptions({
+                keys: nextProps.keys,
                 options: nextProps.options,
                 filterFn: options => this._filterByQueryStr(this._getSearchValue(), options)
             });
@@ -61,9 +65,11 @@ class GroupedMultiSelectContent extends React.Component {
     }
 
     componentDidMount() {
-        const x = window.scrollX,
-            y = window.scrollY;
-        this._searchInput.focus();
+        const x = window.scrollX;
+        const y = window.scrollY;
+        if (this._searchInput) {
+            this._searchInput.focus();
+        }
         window.scrollTo(x, y);
     }
 
@@ -152,8 +158,8 @@ class GroupedMultiSelectContent extends React.Component {
         });
     }
 
-    _getFilteredOptions({ options, filterFn, sortFn }) {
-        return this.props.keys.reduce((result, key) => {
+    _getFilteredOptions({ options, filterFn, sortFn, keys = this.props.keys }) {
+        return keys.reduce((result, key) => {
             let filtered = options[key];
 
             if (filterFn) {
@@ -181,10 +187,10 @@ class GroupedMultiSelectContent extends React.Component {
     };
 
     _doSearchMatchAnyResult = key => {
-        if (this.props.options[key].length === 0) {
+        if (!this.props.options[key] || this.props.options[key].length === 0) {
             return true;
         }
-        return this.state.filtered[key].length !== 0;
+        return this.state.filtered[key] && this.state.filtered[key].length !== 0;
     };
 
     _getGroupViewConfig = key => {
@@ -208,39 +214,39 @@ class GroupedMultiSelectContent extends React.Component {
     render() {
         return (
             <div className="select__popup" style={{ fontSize: '1.4rem' }}>
-                <div className="select__search-container">
-                    <IconInput
-                        inputRef={input => (this._searchInput = input)}
-                        fluid={true}
-                        placeholder={this.props.searchPlaceholder}
-                        size="sm"
-                        onChange={this._applySearch}
-                        className="select__search"
-                        iconClassName="im icon-search"
-                    />
-                </div>
+                {this.props.popupHeader}
+                {this.props.showSearch ? (
+                    <div className="select__search-container">
+                        <IconInput
+                            inputRef={input => (this._searchInput = input)}
+                            fluid={true}
+                            placeholder={this.props.searchPlaceholder}
+                            size="sm"
+                            onChange={this._applySearch}
+                            className="select__search"
+                            iconClassName="im icon-search"
+                        />
+                    </div>
+                ) : null}
+
                 <div style={{ maxHeight: this.props.height }} className="select__options">
                     {this.props.keys.map(key => {
                         const viewConfig = this._getGroupViewConfig(key);
                         return (
                             <div key={key} className="select__group">
                                 <div className="select__group-header">{this._getHeader(key)}</div>
-                                {(() => {
-                                    if (this._doSearchMatchAnyResult(key)) {
-                                        return (
-                                            <SelectionList
-                                                extra={viewConfig.extra}
-                                                noOptionPlaceholder={viewConfig.noOptionPlaceholder}
-                                                isSelected={option => this._isOptionSelected(option, key)}
-                                                onChange={option => this._onSelect(option, key)}
-                                                value={this._getSelected(key)}
-                                                options={this.state.filtered[key]}
-                                            />
-                                        );
-                                    } else {
-                                        return <div className="no-results-found">No results found</div>;
-                                    }
-                                })()}
+                                {this._doSearchMatchAnyResult(key) ? (
+                                    <SelectionList
+                                        extra={viewConfig.extra}
+                                        noOptionPlaceholder={viewConfig.noOptionPlaceholder}
+                                        isSelected={option => this._isOptionSelected(option, key)}
+                                        onChange={option => this._onSelect(option, key)}
+                                        value={this._getSelected(key)}
+                                        options={this.state.filtered[key]}
+                                    />
+                                ) : (
+                                    <div className="no-results-found">No results found</div>
+                                )}
                             </div>
                         );
                     })}

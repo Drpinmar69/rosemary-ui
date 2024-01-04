@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import ReactList from 'react-list';
 import cn from 'classnames';
 
-import CheckBox from '../Checkbox';
+import CheckBox from '../CheckBox/index';
 import { isDefined, findIdentifiables } from '../util/utils';
 
 const PROPERTY_TYPES = {
@@ -13,13 +13,13 @@ const PROPERTY_TYPES = {
     options: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.number.isRequired,
-            displayString: PropTypes.string.isRequired
+            displayString: PropTypes.node.isRequired
         })
     ),
     onChange: PropTypes.func,
     focus: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        displayString: PropTypes.string.isRequired
+        displayString: PropTypes.node.isRequired
     })
 };
 const DEFAULT_PROPS = {};
@@ -116,7 +116,9 @@ class CheckBoxList extends React.Component {
                 <td className="check-box-list__check-box">
                     <CheckBox value={selected} />
                 </td>
-                <td className="check-box-list__label">{option.displayString}</td>
+                <td className="check-box-list__label" title={option.displayString}>
+                    {option.displayString}
+                </td>
             </tr>
         );
     }

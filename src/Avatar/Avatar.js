@@ -2,21 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const PROPERTY_TYPES = {
-    text: PropTypes.string
+    text: PropTypes.string,
+    avatarImgUrl: PropTypes.string,
+    testId: PropTypes.any
 };
-const DEFAULT_PROPS = {};
 
 class Avatar extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        return <div className="avatar">{this.props.text}</div>;
+        return (
+            <div data-test-id={this.props.testId} className="avatar">
+                {this.props.avatarImgUrl ? (
+                    <img className="avatar__img" src={this.props.avatarImgUrl} />
+                ) : (
+                    this.props.text
+                )}
+            </div>
+        );
     }
 }
 
 Avatar.propTypes = PROPERTY_TYPES;
-Avatar.defaultProps = DEFAULT_PROPS;
 
 export default Avatar;

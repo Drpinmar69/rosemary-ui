@@ -47,6 +47,10 @@
     color: $black;
     line-height: 1.2em;
   }
+
+  &.grayed_item {
+    color: $mid-grey;
+  }
 }
 
 .select--sm {
@@ -84,6 +88,12 @@
   &.selected {
     background-color: $select__option-selected-background-color;
     color: $select__option-selected-color;
+  }
+  &.odd {
+    background-color: $light-grey;
+  }
+  &.grayed_item {
+    color: $mid-grey;
   }
 }
 
@@ -179,4 +189,9 @@
 .example-leave.example-leave-active {
   opacity: 0.01;
   transition: opacity 300ms ease-in;
+}
+
+.select__popup-footer {
+  padding: 5px 5px 5px 10px;
+  border-top: 1px solid #e9e9e9;
 }

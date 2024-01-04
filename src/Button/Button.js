@@ -1,45 +1,60 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
-const PROPERTY_TYPES = {
-    onClick: PropTypes.func,
-    disabled: PropTypes.bool,
-    baseClassName: PropTypes.string,
-    title: PropTypes.string,
-    value: PropTypes.string
-};
-const DEFAULT_PROPS = {
-    baseClassName: 'btn'
-};
+import noop from 'lodash/noop';
+import omit from 'lodash/omit';
 
 class Button extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.onClickButton = this.onClickButton.bind(this);
-    }
+    static propTypes = {
+        onClick: PropTypes.func,
+        selected: PropTypes.bool,
+        disabled: PropTypes.bool,
+        className: PropTypes.string,
+        baseClassName: PropTypes.string,
+        title: PropTypes.string,
+        value: PropTypes.string,
+        testId: PropTypes.any,
+        as: PropTypes.string,
+        children: PropTypes.node
+    };
+    static defaultProps = {
+        baseClassName: 'btn',
+        onClick: noop
+    };
 
     render() {
         let style = classNames(this.props.className, this.props.baseClassName, {
-            disabled: this.props.disabled
+            disabled: this.props.disabled,
+            selected: this.props.selected
         });
 
+        const Element = this.props.as || 'div';
         return (
-            <div title={this.props.title} id={this.props.id} className={style} onClick={this.onClickButton}>
+            <Element
+                {...omit(this.props, [
+                    'baseClassName',
+                    'disabled',
+                    'selected',
+                    'className',
+                    'onClick',
+                    'data-test-id',
+                    'testId',
+                    'as'
+                ])}
+                data-test-id={this.props.testId}
+                className={style}
+                onClick={this.onClickButton}
+            >
                 {this.props.children || this.props.value}
-            </div>
+            </Element>
         );
     }
 
-    onClickButton(e) {
+    onClickButton = e => {
         if (this.props.onClick && !this.props.disabled) {
             this.props.onClick(e);
         }
-    }
+    };
 }
-
-Button.propTypes = PROPERTY_TYPES;
-Button.defaultProps = DEFAULT_PROPS;
 
 export default Button;

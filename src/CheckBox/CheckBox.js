@@ -9,7 +9,8 @@ const PROPERTY_TYPES = {
     label: PropTypes.string,
     defaultValue: PropTypes.bool,
     value: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    testId: PropTypes.any
 };
 const DEFAULT_PROPS = {
     disabled: false,
@@ -60,7 +61,13 @@ class CheckBox extends React.Component {
         });
 
         return (
-            <div tabIndex="1" onClick={e => this.onClickCheckBox(e)} className={style}>
+            <div
+                data-test-id={this.props.testId}
+                data-test-checked={this.state.value}
+                tabIndex="1"
+                onClick={e => this.onClickCheckBox(e)}
+                className={style}
+            >
                 <i className="im icon-ok" />
                 {this.props.label ? <label className="checkbox-label">{this.props.label}</label> : null}
             </div>

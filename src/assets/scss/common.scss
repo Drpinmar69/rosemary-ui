@@ -6,7 +6,7 @@
 
 .form-separator {
   border-bottom: 1px solid $pinkish-grey;
-  margin: 30px 0;
+  margin: 20px 0 33px;
 }
 
 .form-btn-group {
@@ -16,4 +16,15 @@
   .btn:last-of-type {
     margin-right: 0;
   }
+}
+
+.checkbox i.im.ion-minus {
+  position: absolute;
+  left: 3px;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.align-self-center{
+  align-self: center;
 }
